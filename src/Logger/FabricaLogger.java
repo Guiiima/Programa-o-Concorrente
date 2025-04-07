@@ -1,4 +1,4 @@
-package FabricaLogger;
+package Logger;
 
 import Models.Veiculo;
 
@@ -14,16 +14,3 @@ public class FabricaLogger {
     }
 }
 
-public class LojaLogger {
-    public static void logCompra(Veiculo veiculo, int posicaoEsteira, int lojaId) {
-        System.out.printf("[LOJA-COMPRA] ID Veículo: %d | Loja: %d | Posição Esteira: %d%n",
-                veiculo.getId(), lojaId, posicaoEsteira);
-    }
-}
-
-public class ClienteLogger {
-    public static void logCompra(int clienteId, Veiculo veiculo) {
-        System.out.printf("[CLIENTE-COMPRA] Cliente: %d | Veículo: %d | Cor: %s | Tipo: %s%n",
-                clienteId, veiculo.getId(), veiculo.getCor(), veiculo.getTipo());
-    }
-}

@@ -4,6 +4,7 @@ import java.util.concurrent.Executors;
 
 import EstacaoProducao.EstacaoProducao;
 import EstoquePecas.EstoquePecas;
+import Loja.Loja;
 
 public class Fabrica {
     private final EstoquePecas estoque;
@@ -52,7 +53,7 @@ public class Fabrica {
         for (EstacaoProducao estacao : estacoes) {
             Veiculo veiculo = estacao.venderParaLoja();
             if (veiculo != null) {
-                FabricaLogger.logVenda(veiculo, loja.getId());
+                Logger.logVenda(veiculo, loja.getId());
                 return veiculo;
             }
         }

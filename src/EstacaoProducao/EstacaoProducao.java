@@ -7,7 +7,7 @@ import EstoquePecas.EstoquePecas;
 import Models.Funcionario;
 import Models.GeradorId;
 import Models.Veiculo;
-
+import Logger.ProduçaoLogger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -77,7 +77,7 @@ public class EstacaoProducao {
             );
 
             int posicaoEsteira = esteira.adicionarVeiculo(veiculo);
-            FabricaLogger.logProducao(veiculo, posicaoEsteira);
+            ProduçaoLogger.logProducao(veiculo, posicaoEsteira);
             return veiculo;
         } finally {
             ferramentaDireita.unlock();
