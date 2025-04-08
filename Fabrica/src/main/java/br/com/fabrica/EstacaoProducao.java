@@ -44,8 +44,7 @@ public class EstacaoProducao implements Runnable {
             Thread.currentThread().interrupt();
         }
     }
-
-    // TODO - Pausar a produção caso a esteira estiver cheia.
+    
     private Veiculo produzirVeiculo(int posicaoFuncionario) throws InterruptedException {
         if (posicaoFuncionario < 0 || posicaoFuncionario >= funcionarios.length) {
             throw new IllegalArgumentException("ID de funcionário inválido");
@@ -55,30 +54,33 @@ public class EstacaoProducao implements Runnable {
         Semaphore ferramentaEsquerda = ferramentas[posicaoFuncionario];
         Semaphore ferramentaDireita = ferramentas[(posicaoFuncionario + 1) % NUM_FUNCIONARIOS];
 
-        if (posicaoFuncionario < (funcionarios.length - 1)) {
-            ferramentaEsquerda.acquire();
-            ferramentaDireita.acquire();
-        } else {
-            ferramentaDireita.acquire();
-            ferramentaEsquerda.acquire();
+        if (!Fabrica.getEsteiraCircular().esteiraCheia()) {
+            if (posicaoFuncionario < (funcionarios.length - 1)) {
+                ferramentaEsquerda.acquire();
+                ferramentaDireita.acquire();
+            } else {
+                ferramentaDireita.acquire();
+                ferramentaEsquerda.acquire();
+            }
+
+            if (!Fabrica.retirarPeca()) {
+                return null;
+            }
+
+            this.dormirAleatoriamente(500, 2000);
+
+            ferramentaEsquerda.release();
+            ferramentaDireita.release();
+
+            return new Veiculo(
+                    GeradorId.getNextId(),
+                    Cor.values()[random.nextInt(Cor.values().length)],
+                    TipoVeiculo.values()[random.nextInt(TipoVeiculo.values().length)],
+                    id,
+                    funcionario.id()
+            );
         }
-
-        if (!Fabrica.retirarPeca()) {
-            return null;
-        }
-
-        this.dormirAleatoriamente(500, 2000);
-
-        ferramentaEsquerda.release();
-        ferramentaDireita.release();
-
-        return new Veiculo(
-                GeradorId.getNextId(),
-                Cor.values()[random.nextInt(Cor.values().length)],
-                TipoVeiculo.values()[random.nextInt(TipoVeiculo.values().length)],
-                id,
-                funcionario.id()
-        );
+        return null;
     }
 
     private void dormirAleatoriamente(long min, long max) throws InterruptedException {

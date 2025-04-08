@@ -23,16 +23,18 @@ public class Loja implements Runnable {
     @Override
     public void run() {
         while (ativa) {
+            if (!Fabrica.getEsteiraCircular().esteiraVazia()) {
                 Veiculo veiculo = Fabrica.retirarVeiculo(this);
-            if (veiculo != null) {
-                int posicao = esteira.adicionarVeiculo(veiculo);
-                LojaLogger.logCompra(veiculo, posicao, id);
-            } else {
-                try {
-                    Thread.sleep(1000); // Espera antes de tentar novamente
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    ativa = false;
+                if (veiculo != null) {
+                    int posicao = esteira.adicionarVeiculo(veiculo);
+                    LojaLogger.logCompra(veiculo, posicao, id);
+                } else {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        ativa = false;
+                    }
                 }
             }
         }

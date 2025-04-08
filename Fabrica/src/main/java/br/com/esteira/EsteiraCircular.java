@@ -7,8 +7,9 @@ import java.util.concurrent.Semaphore;
 public class EsteiraCircular {
     private final Veiculo[] buffer;
     private final int capacidade;
-    private int lastConsumed = 0;
-    private int lastProduced = 0;
+    private int tail = 0;
+    private int head = 0;
+    private int count = 0;
     private final Semaphore mutex;
     private final Semaphore itens;
     private final Semaphore espacos;
@@ -22,15 +23,16 @@ public class EsteiraCircular {
         this.espacos = new Semaphore(capacidade, true);
     }
 
+
     public int adicionarVeiculo(Veiculo veiculo) {
         try {
             espacos.acquire();
             mutex.acquire();
 
-            buffer[lastProduced] = veiculo;
-            int posicao = lastProduced;
-            lastProduced = (++lastProduced) % capacidade;
-//            count++;
+            buffer[head] = veiculo;
+            int posicao = head;
+            head = (++head) % capacidade;
+            count++;
 
             mutex.release();
             itens.release();
@@ -47,9 +49,9 @@ public class EsteiraCircular {
             itens.acquire();
             mutex.acquire();
 
-            Veiculo veiculo = buffer[lastConsumed];
-            lastConsumed = (++lastConsumed) % capacidade;
-//            count--;
+            Veiculo veiculo = buffer[tail];
+            tail = (++tail) % capacidade;
+            count--;
 
             mutex.release();
             espacos.release();
@@ -59,5 +61,13 @@ public class EsteiraCircular {
             Thread.currentThread().interrupt();
             return null;
         }
+    }
+
+    public boolean esteiraCheia() {
+        return count == capacidade;
+    }
+
+    public boolean esteiraVazia() {
+        return count == 0;
     }
 }

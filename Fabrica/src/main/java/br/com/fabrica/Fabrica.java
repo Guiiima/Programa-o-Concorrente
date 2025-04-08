@@ -51,6 +51,10 @@ public class Fabrica {
         return estoque.retirarPecas();
     }
 
+    public static EsteiraCircular getEsteiraCircular() {
+        return esteira;
+    }
+
     public void encerrar() {
         executor.shutdownNow();
     }
