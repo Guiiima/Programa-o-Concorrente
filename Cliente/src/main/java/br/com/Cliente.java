@@ -1,43 +1,37 @@
 package br.com;
 
-import Logger.ClienteLogger;
-import Loja.Loja;
-import Models.Veiculo;
+import br.com.logger.ClienteLogger;
+import br.com.model.Veiculo;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 public class Cliente implements Runnable {
     private final int id;
-    private final Loja[] lojas;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final String endpoint = "http://localhost:8080/veiculos/comprar";
+
     private int carrosComprados = 0;
 
-    public Cliente(int id, Loja[] lojas) {
+    public Cliente(int id) {
         this.id = id;
-        this.lojas = lojas;
     }
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            // Escolhe uma loja aleatória
-            Loja loja = lojas[(int)(Math.random() * lojas.length)];
+        while (true) {
+            ResponseEntity<Veiculo> response = restTemplate.getForEntity(endpoint, Veiculo.class);
+            Veiculo veiculo = response.getBody();
 
-            Veiculo veiculo = loja.venderParaCliente();
             if (veiculo != null) {
                 carrosComprados++;
                 ClienteLogger.logCompra(id, veiculo);
+            }
 
-                // Tempo aleatório antes da próxima compra
-                try {
-                    Thread.sleep((long)(Math.random() * 3000 + 1000));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            } else {
-                // Espera se não há carros disponíveis
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }

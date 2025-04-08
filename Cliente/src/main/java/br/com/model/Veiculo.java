@@ -1,6 +1,4 @@
-package br.com.Models;
-
-//import br.com.Common.ENUM.*;
+package br.com.model;
 
 import br.com.ENUM.Cor;
 import br.com.ENUM.TipoVeiculo;

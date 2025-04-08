@@ -1,6 +1,6 @@
-package br.com.Logger;
+package br.com.logger;
 
-import br.com.Models.Veiculo;
+import br.com.model.Veiculo;
 
 public class FabricaLogger {
     public static void logProducao(Veiculo veiculo, int posicaoEsteira) {
@@ -10,7 +10,7 @@ public class FabricaLogger {
     }
 
     public static void logVenda(Veiculo veiculo, int lojaId) {
-        System.out.printf("[FABRICA-VENDA] ID: %d | Loja: %d%n", veiculo.id(), lojaId);
+        System.out.printf("[FABRICA-VENDA] ID: %d | LojaController: %d%n", veiculo.id(), lojaId);
     }
 }
 

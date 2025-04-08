@@ -1,6 +1,6 @@
-package br.com.EsteiraCircular;
+package br.com.esteira;
 
-import br.com.Models.Veiculo;
+import br.com.model.Veiculo;
 
 import java.util.concurrent.Semaphore;
 

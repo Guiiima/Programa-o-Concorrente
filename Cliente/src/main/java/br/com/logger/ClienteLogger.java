@@ -1,6 +1,6 @@
-package br.com.Logger;
+package br.com.logger;
 
-import br.com.Models.Veiculo;
+import br.com.model.Veiculo;
 
 public class ClienteLogger {
     public static void logCompra(int clienteId, Veiculo veiculo) {

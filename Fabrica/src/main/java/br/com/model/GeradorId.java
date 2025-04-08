@@ -1,4 +1,4 @@
-package br.com.Models;
+package br.com.model;
 
 import java.util.concurrent.Semaphore;
 

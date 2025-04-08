@@ -1,5 +1,5 @@
-package br.com.Logger;
-import br.com.Models.Veiculo;
+package br.com.logger;
+import br.com.model.Veiculo;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

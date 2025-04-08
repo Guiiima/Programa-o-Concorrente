@@ -1,8 +1,8 @@
-package br.com.Loja;
+package br.com.loja;
 
-import br.com.Logger.LojaLogger;
-import br.com.Models.Veiculo;
-import br.com.EsteiraCircular.EsteiraCircular;
+import br.com.logger.LojaLogger;
+import br.com.model.Veiculo;
+import br.com.esteira.EsteiraCircular;
 import br.com.fabrica.Fabrica;
 
 public class Loja implements Runnable {

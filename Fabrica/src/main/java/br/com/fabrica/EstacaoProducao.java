@@ -2,9 +2,9 @@ package br.com.fabrica;
 
 import br.com.ENUM.Cor;
 import br.com.ENUM.TipoVeiculo;
-import br.com.Models.Funcionario;
-import br.com.Models.GeradorId;
-import br.com.Models.Veiculo;
+import br.com.model.Funcionario;
+import br.com.model.GeradorId;
+import br.com.model.Veiculo;
 
 import java.util.concurrent.Semaphore;
 import java.util.Random;
@@ -32,15 +32,21 @@ public class EstacaoProducao implements Runnable {
 
     @Override
     public void run() {
-        while (Fabrica.getEstoque() > 0) {
-            for (int i = 0; i < NUM_FUNCIONARIOS; ++i) {
-                Veiculo veiculo = this.produzirVeiculo(i);
-                Fabrica.adicionarVeiculo(veiculo);
+        try {
+            while (Fabrica.getEstoque() > 0) {
+                for (int i = 0; i < NUM_FUNCIONARIOS; ++i) {
+                    Veiculo veiculo = this.produzirVeiculo(i);
+                    if (veiculo != null)
+                        Fabrica.adicionarVeiculo(veiculo);
+                }
             }
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 
-    private Veiculo produzirVeiculo(int posicaoFuncionario) {
+    // TODO - Pausar a produção caso a esteira estiver cheia.
+    private Veiculo produzirVeiculo(int posicaoFuncionario) throws InterruptedException {
         if (posicaoFuncionario < 0 || posicaoFuncionario >= funcionarios.length) {
             throw new IllegalArgumentException("ID de funcionário inválido");
         }
@@ -49,39 +55,33 @@ public class EstacaoProducao implements Runnable {
         Semaphore ferramentaEsquerda = ferramentas[posicaoFuncionario];
         Semaphore ferramentaDireita = ferramentas[(posicaoFuncionario + 1) % NUM_FUNCIONARIOS];
 
-        try {
-            if (posicaoFuncionario < (funcionarios.length - 1)) {
-                ferramentaEsquerda.acquire();
-                ferramentaDireita.acquire();
-            } else {
-                ferramentaDireita.acquire();
-                ferramentaEsquerda.acquire();
-            }
+        if (posicaoFuncionario < (funcionarios.length - 1)) {
+            ferramentaEsquerda.acquire();
+            ferramentaDireita.acquire();
+        } else {
+            ferramentaDireita.acquire();
+            ferramentaEsquerda.acquire();
+        }
 
-            if (!Fabrica.retirarPeca()) {
-                return null;
-            }
-
-            this.dormirAleatoriamente(500, 2000);
-
-            return new Veiculo(
-                    GeradorId.getNextId(),
-                    Cor.values()[random.nextInt(Cor.values().length)],
-                    TipoVeiculo.values()[random.nextInt(TipoVeiculo.values().length)],
-                    id,
-                    funcionario.id()
-            );
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        if (!Fabrica.retirarPeca()) {
             return null;
         }
+
+        this.dormirAleatoriamente(500, 2000);
+
+        ferramentaEsquerda.release();
+        ferramentaDireita.release();
+
+        return new Veiculo(
+                GeradorId.getNextId(),
+                Cor.values()[random.nextInt(Cor.values().length)],
+                TipoVeiculo.values()[random.nextInt(TipoVeiculo.values().length)],
+                id,
+                funcionario.id()
+        );
     }
 
-    private void dormirAleatoriamente(long min, long max) {
-        try {
-            Thread.sleep((long) (random.nextDouble() * (max - min) + min));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    private void dormirAleatoriamente(long min, long max) throws InterruptedException {
+        Thread.sleep((long) (random.nextDouble() * (max - min) + min));
     }
 }
